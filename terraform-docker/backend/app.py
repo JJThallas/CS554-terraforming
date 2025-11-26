@@ -1,11 +1,12 @@
 import os
+import time
 from datetime import datetime
 
 from flask import Flask, request, jsonify
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 # static information as metric
 app = Flask(__name__)
@@ -15,11 +16,23 @@ note_count = Counter(
     "Total number of notes created",
 )
 
+total_requests = Counter(
+    "http_requests_total",
+    "Total number of HTTP requests",
+    ["method", "endpoint", "http_status"],
+)
+
+latency = Histogram(
+    "http_request_duration_seconds",
+    "Histogram of HTTP request latency (seconds)",
+    ["method", "endpoint"],
+)
+
 def get_db_connection():
     conn = psycopg2.connect(
-        host=os.environ.get("DB_HOST", "postgres-demo"),
+        host=os.environ.get("DB_HOST", "postgres"),
         port=os.environ.get("DB_PORT", "5432"),
-        dbname=os.environ.get("DB_NAME", "demo_db"),
+        dbname=os.environ.get("DB_NAME", "db"),
         user=os.environ.get("DB_USER", "postgres"),
         password=os.environ.get("DB_PASSWORD", "postgres"),
     )
@@ -48,6 +61,7 @@ with app.app_context():
 
 @app.route("/notes", methods=["GET"])
 def get_notes():
+    start = time.time()
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -59,6 +73,11 @@ def get_notes():
     finally:
         conn.close()
 
+        # Record metrics
+        dur = time.time() - start
+        latency.labels(method="GET", endpoint="/notes").observe(dur)
+        total_requests.labels(method="GET", endpoint="/notes", http_status=200).inc()
+
 @app.route("/notes", methods=["POST"])
 def create_note():
     data = request.get_json(silent=True) or {}
@@ -69,6 +88,7 @@ def create_note():
     if not title or not content:
         return jsonify({"error": "title and content are required"}), 400
 
+    start = time.time()
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -87,9 +107,14 @@ def create_note():
     finally:
         conn.close()
 
-@app.route("/metrics")
+        # Record metrics
+        dur = time.time() - start
+        latency.labels(method="POST", endpoint="/notes").observe(dur)
+        total_requests.labels(method="POST", endpoint="/notes", http_status=201).inc()
+
+@app.route("/metrics", methods=["GET"])
 def metrics():
-    return generate_latest(registry), 200, {"Content-Type": CONTENT_TYPE_LATEST}
+    return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
 
 if __name__ == "__main__":
     # Let Docker expose the port

@@ -16,7 +16,7 @@ resource "docker_network" "demo" {
 }
 
 resource "docker_container" "nginx" {
-  name  = "demo-nginx"
+  name  = "nginx"
   image = "nginx:latest"
 
   networks_advanced {
@@ -43,11 +43,11 @@ resource "docker_image" "postgres" {
 }
 
 resource "docker_volume" "postgres_data" {
-  name = "postgres-data-demo"
+  name = "postgres-data"
 }
 
 resource "docker_container" "postgres" {
-  name = "postgres-demo"
+  name = "postgres"
   image = docker_image.postgres.image_id
 
   networks_advanced {
@@ -55,9 +55,9 @@ resource "docker_container" "postgres" {
   }
 
   env = [
-    "POSTGRES_USER=postgres",
-    "POSTGRES_PASSWORD=postgres",
-    "POSTGRES_DB=demo_db"
+    "POSTGRES_USER = postgres",
+    "POSTGRES_PASSWORD = postgres",
+    "POSTGRES_DB = db"
   ]
 
   mounts {
@@ -85,7 +85,7 @@ resource "docker_image" "notes-api" {
 }
 
 resource "docker_container" "notes-api" {
-  name = "notes-api-demo"
+  name = "notes-api"
   image = docker_image.notes-api.image_id
 
   networks_advanced {
@@ -97,7 +97,7 @@ resource "docker_container" "notes-api" {
     "DB_PORT = 5432",
     "DB_USER = postgres",
     "DB_PASSWORD = postgres",
-    "DB_NAME = demo_db"
+    "DB_NAME = db"
   ]
 
   ports {
@@ -109,7 +109,7 @@ resource "docker_container" "notes-api" {
 }
 
 resource "docker_volume" "prometheus_data" {
-  name = "prometheus-data-demo"
+  name = "prometheus-data"
 }
 
 resource "docker_image" "prometheus" {
@@ -118,7 +118,7 @@ resource "docker_image" "prometheus" {
 }
 
 resource "docker_container" "prometheus" {
-  name = "prometheus-demo"
+  name = "prometheus"
   image = docker_image.prometheus.image_id
 
   networks_advanced {
