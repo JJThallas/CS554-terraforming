@@ -68,7 +68,7 @@ resource "docker_image" "notes-api" {
 
   name = "notes-api:latest"
   build {
-    context = "${path.module}/notes-api"
+    context = "${path.module}/backend"
   }
 
   keep_locally = false
