@@ -25,7 +25,7 @@ resource "docker_container" "nginx" {
 
   mounts {
     target = "/etc/nginx/conf.d/default.conf"
-    source = "${path.module}/nginx/default.conf"
+    source = abspath("${path.module}/nginx/default.conf")
     type = "bind"
   }
 
