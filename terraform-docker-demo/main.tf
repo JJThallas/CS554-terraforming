@@ -68,14 +68,14 @@ resource "docker_image" "notes-api" {
 
   name = "notes-api:latest"
   build {
-    context    = "${path.module}/notes-api"
+    context = "${path.module}/notes-api"
   }
 
   keep_locally = false
 }
 
 resource "docker_container" "notes-api" {
-  name  = "notes-api-demo"
+  name = "notes-api-demo"
   image = docker_image.notes-api.image_id
 
   networks_advanced {
@@ -83,11 +83,11 @@ resource "docker_container" "notes-api" {
   }
 
   env = [
-    "DB_HOST=${docker_container.postgres.name}",
-    "DB_PORT=5432",
-    "DB_USER=postgres",
-    "DB_PASSWORD=postgres",
-    "DB_NAME=demo_db"
+    "DB_HOST = ${docker_container.postgres.name}",
+    "DB_PORT = 5432",
+    "DB_USER = postgres",
+    "DB_PASSWORD = postgres",
+    "DB_NAME = demo_db"
   ]
 
   ports {
