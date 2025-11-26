@@ -145,3 +145,34 @@ resource "docker_container" "prometheus" {
 
   depends_on = [docker_container.notes-api]
 }
+
+resource "docker_image" "grafana" {
+  name = "grafana/grafana:latest"
+  keep_locally = false
+}
+
+resource "docker_volume" "grafana_data" {
+  name = "grafana-data"
+}
+
+resource "docker_container" "grafana" {
+  name = "grafana"
+  image = docker_image.grafana.image_id
+
+  networks_advanced {
+    name = docker_network.demo.name
+  }
+
+  ports {
+    internal = 3000
+    external = 3001
+  }
+
+  mounts {
+    target = "/var/lib/grafana"
+    source = docker_volume.grafana_data.name
+    type   = "volume"
+  }
+
+  depends_on = [docker_container.prometheus]
+}
