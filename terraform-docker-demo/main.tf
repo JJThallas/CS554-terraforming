@@ -69,7 +69,6 @@ resource "docker_image" "notes-api" {
   name = "notes-api:latest"
   build {
     context    = "${path.module}/notes-api"
-    dockerfile = "Dockerfile"
   }
 
   keep_locally = false
