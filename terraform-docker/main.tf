@@ -55,9 +55,9 @@ resource "docker_container" "postgres" {
   }
 
   env = [
-    "POSTGRES_USER = postgres",
-    "POSTGRES_PASSWORD = postgres",
-    "POSTGRES_DB = db"
+    "POSTGRES_USER=postgres",
+    "POSTGRES_PASSWORD=postgres",
+    "POSTGRES_DB=db"
   ]
 
   mounts {
@@ -93,11 +93,11 @@ resource "docker_container" "notes-api" {
   }
 
   env = [
-    "DB_HOST = ${docker_container.postgres.name}",
-    "DB_PORT = 5432",
-    "DB_USER = postgres",
-    "DB_PASSWORD = postgres",
-    "DB_NAME = db"
+    "DB_HOST=${docker_container.postgres.name}",
+    "DB_PORT=5432",
+    "DB_USER=postgres",
+    "DB_PASSWORD=postgres",
+    "DB_NAME=db"
   ]
 
   ports {
