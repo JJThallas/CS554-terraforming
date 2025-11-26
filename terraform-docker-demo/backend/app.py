@@ -3,10 +3,17 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify
 import psycopg2
-import psycopg2.extras
+from psycopg2.extras import RealDictCursor
 
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+
+# static information as metric
 app = Flask(__name__)
 
+note_count = Counter(
+    "notes_created",
+    "Total number of notes created",
+)
 
 def get_db_connection():
     conn = psycopg2.connect(
@@ -75,9 +82,14 @@ def create_note():
             )
             row = cur.fetchone()
             conn.commit()
+            note_count.inc()
             return jsonify(row), 201
     finally:
         conn.close()
+
+@app.route("/metrics")
+def metrics():
+    return generate_latest(registry), 200, {"Content-Type": CONTENT_TYPE_LATEST}
 
 if __name__ == "__main__":
     # Let Docker expose the port

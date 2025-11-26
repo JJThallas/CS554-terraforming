@@ -107,3 +107,41 @@ resource "docker_container" "notes-api" {
 
   depends_on = [docker_container.postgres]
 }
+
+resource "docker_volume" "prometheus_data" {
+  name = "prometheus-data-demo"
+}
+
+resource "docker_image" "prometheus" {
+  name = "prom/prometheus:latest"
+  keep_locally = false
+}
+
+resource "docker_container" "prometheus" {
+  name = "prometheus-demo"
+  image = docker_image.prometheus.image_id
+
+  networks_advanced {
+    name = docker_network.demo.name
+  }
+
+  mounts {
+    target = "/etc/prometheus/prometheus.yml"
+    source = abspath("${path.module}/prometheus/prometheus.yml")
+    type = "bind"
+  }
+
+  mounts {
+    target = "/prometheus"
+    source = docker_volume.prometheus_data.name
+    type   = "volume"
+  }
+
+
+  ports {
+    internal = 9090
+    external = 9090
+  }
+
+  depends_on = [docker_container.notes-api]
+}
