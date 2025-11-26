@@ -40,4 +40,15 @@ def init_db():
 with app.app_context():
     init_db()
 
-
+@app.route("/notes", methods=["GET"])
+def get_notes():
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT id, title, content, created_at FROM notes ORDER BY created_at DESC;"
+            )
+            rows = cur.fetchall()
+            return jsonify(rows), 200
+    finally:
+        conn.close()
