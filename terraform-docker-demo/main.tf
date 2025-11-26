@@ -92,8 +92,8 @@ resource "docker_container" "notes-api" {
   ]
 
   ports {
-    internal = 8000
-    external = 8000
+    internal = 3000
+    external = 3000
   }
 
   depends_on = [docker_container.postgres]

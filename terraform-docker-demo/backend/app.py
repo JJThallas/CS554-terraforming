@@ -81,4 +81,4 @@ def create_note():
 
 if __name__ == "__main__":
     # Let Docker expose the port
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    app.run(host="0.0.0.0", port=3000, debug=False)
