@@ -23,10 +23,18 @@ resource "docker_container" "nginx" {
     name = docker_network.demo.name
   }
 
+  mounts {
+    target = "/etc/nginx/conf.d/default.conf"
+    source = "${path.module}/nginx/default.conf"
+    type = "bind"
+  }
+
   ports {
     internal = 80
     external = 8080
   }
+
+  depends_on = [docker_container.notes-api]
 }
 
 resource "docker_image" "postgres" {
