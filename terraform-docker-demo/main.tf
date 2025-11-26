@@ -63,3 +63,38 @@ resource "docker_container" "postgres" {
     external = 5432
   }
 }
+
+resource "docker_image" "notes-api" {
+
+  name = "notes-api:latest"
+  build {
+    context    = "${path.module}/notes-api"
+    dockerfile = "Dockerfile"
+  }
+
+  keep_locally = false
+}
+
+resource "docker_container" "notes-api" {
+  name  = "notes-api-demo"
+  image = docker_image.notes-api.image_id
+
+  networks_advanced {
+    name = docker_network.demo.name
+  }
+
+  env = [
+    "DB_HOST=${docker_container.postgres.name}",
+    "DB_PORT=5432",
+    "DB_USER=postgres",
+    "DB_PASSWORD=postgres",
+    "DB_NAME=demo_db"
+  ]
+
+  ports {
+    internal = 8000
+    external = 8000
+  }
+
+  depends_on = [docker_container.postgres]
+}
