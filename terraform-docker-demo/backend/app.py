@@ -52,3 +52,34 @@ def get_notes():
             return jsonify(rows), 200
     finally:
         conn.close()
+
+@app.route("/notes", methods=["POST"])
+def create_note():
+    data = request.get_json(silent=True) or {}
+
+    title = data.get("title")
+    content = data.get("content")
+
+    if not title or not content:
+        return jsonify({"error": "title and content are required"}), 400
+
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """
+                INSERT INTO notes (title, content)
+                VALUES (%s, %s)
+                RETURNING id, title, content, created_at;
+                """,
+                (title, content),
+            )
+            row = cur.fetchone()
+            conn.commit()
+            return jsonify(row), 201
+    finally:
+        conn.close()
+
+if __name__ == "__main__":
+    # Let Docker expose the port
+    app.run(host="0.0.0.0", port=8000, debug=False)
