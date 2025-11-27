@@ -1,11 +1,11 @@
 terraform {
   required_providers {
     kubernetes = {
-      source = "hashicorp/kubernetes"
+      source  = "hashicorp/kubernetes"
       version = "~> 2.0"
     }
     helm = {
-      source = "hashicorp/helm"
+      source  = "hashicorp/helm"
       version = "~> 2.0"
     }
   }
@@ -26,9 +26,8 @@ module "namespace" {
   name   = "demo"
 }
 
-resource "helm_release" "nginx" {
-  name       = "demo-nginx"
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx"
-  namespace  = module.namespace.name
+
+module "nginx" {
+  source    = "./modules/nginx"
+  namespace = module.namespace.name
 }
