@@ -100,8 +100,6 @@ resource "docker_image" "notes-api" {
   }
 
   keep_locally = false
-
-  depends_on = [docker_container.postgres]
 }
 
 resource "docker_container" "notes-api" {
