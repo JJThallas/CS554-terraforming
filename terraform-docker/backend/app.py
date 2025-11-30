@@ -49,7 +49,7 @@ def wait_for_db(max_retries, delay):
             print(f"Database connection established on attempt {attempt}.")
             return
 
-        except OperationalError as e:
+        except psycopg2.OperationalError as e:
 
             # Postgres may accept connections but not be ready, had issues where it would fail to connect after the container was made
             message = str(e)
