@@ -31,3 +31,8 @@ module "nginx" {
   source    = "./modules/nginx"
   namespace = module.namespace.name
 }
+
+module "second" {
+  source    = "./modules/second"
+  namespace = module.namespace.name
+}
