@@ -1,3 +1,23 @@
+variable "postgres_user" {
+  type      = string
+  sensitive = true
+}
+
+variable "postgres_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "postgres_db" {
+  type      = string
+  sensitive = true
+}
+
+variable "postgres_port" {
+  type    = number
+  default = 5432
+}
+
 terraform {
   required_providers {
     docker = {
@@ -55,9 +75,9 @@ resource "docker_container" "postgres" {
   }
 
   env = [
-    "POSTGRES_USER=postgres",
-    "POSTGRES_PASSWORD=postgres",
-    "POSTGRES_DB=db"
+    "POSTGRES_USER=${var.postgres_user}",
+    "POSTGRES_PASSWORD=${var.postgres_password}",
+    "POSTGRES_DB=${var.postgres_db}",
   ]
 
   mounts {
@@ -94,10 +114,10 @@ resource "docker_container" "notes-api" {
 
   env = [
     "DB_HOST=${docker_container.postgres.name}",
-    "DB_PORT=5432",
-    "DB_USER=postgres",
-    "DB_PASSWORD=postgres",
-    "DB_NAME=db"
+    "DB_PORT=${var.postgres_port}",
+    "DB_USER=${var.postgres_user}",
+    "DB_PASSWORD=${var.postgres_password}",
+    "DB_NAME=${var.postgres_db}",
   ]
 
   ports {
