@@ -13,6 +13,54 @@ For my enhancement, I have added:
 - A second (literally) Deployment
 - A second (literally) Service
 
+## "Quick" Start
+
+1. Install Docker ([Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) for Windows, [Docker Engine](https://docs.docker.com/engine/install/) for Linux) and [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+2. Install kubectl:
+```
+sudo snap install kubectl --classic
+```
+3. Install k3d
+```
+curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+```
+4. Create the k8s cluster (with load balancer):
+```
+k3d cluster create my-cluster --port "8080:80@loadbalancer"
+```
+5. Copy configuration files:
+```
+mkdir -p ~/.kube
+k3d kubeconfig get demo-cluster > ~/.kube/config
+chmod 600 ~/.kube/config
+```
+6. Test cluster:
+```
+kubectl config view
+kubectl get nodes
+```
+7. Initialize terraform
+```
+terraform init
+```
+8. Apply terraform
+```
+terraform apply
+```
+9. Set Ingress
+```
+if ! grep -q 'demo.local' /etc/hosts; then
+  echo '127.0.0.1 demo.local' | sudo tee -a /etc/hosts
+  echo '127.0.0.1 second.local' | sudo tee -a /etc/hosts
+fi
+```
+10. Access services:
+
+| Service     | URL                                            |
+| ----------- | ---------------------------------------------- |
+| Nginx | http://demo.local:8080 |
+| Second   | http://second.local:8080|
+
 ## Directory Overview
 
 ### /modules/namespace
