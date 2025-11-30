@@ -15,6 +15,8 @@ For my enhancement, I have added:
 
 Terraform manages the creation, networking, configuration, and orchestration of all containers.
 
+Secrets are contained in `terraform.tfvars`. Normally, these would not be pushed to Github and would be kept local.
+
 ## Quick Start
 
 1. Install Docker ([Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) for Windows, [Docker Engine](https://docs.docker.com/engine/install/) for Linux) and [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
