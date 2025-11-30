@@ -3,7 +3,8 @@ import time
 from datetime import datetime
 
 from flask import Flask, request, jsonify
-import psycopg2
+
+import psycopg2 
 from psycopg2.extras import RealDictCursor
 
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
@@ -38,7 +39,32 @@ def get_db_connection():
     )
     return conn
 
+
+def wait_for_db(max_retries, delay):
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            conn = get_db_connection()
+            conn.close()
+            print(f"Database connection established on attempt {attempt}.")
+            return
+
+        except psycopg2.OperationalError as e:
+
+            # Postgres may accept connections but not be ready, had issues where it would fail to connect after the container was made
+            message = str(e)
+
+            print(f"Database not ready (attempt {attempt}/{max_retries}): {message}")
+
+            time.sleep(delay)
+
+    raise RuntimeError("Could not connect to the database after multiple attempts.")
+
+
 def init_db():
+
+    wait_for_db(max_retries=10, delay=3)
+
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:

@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"namespace","Source":"./modules/namespace","Dir":"modules/namespace"},{"Key":"nginx","Source":"./modules/nginx","Dir":"modules/nginx"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"namespace","Source":"./modules/namespace","Dir":"modules/namespace"},{"Key":"nginx","Source":"./modules/nginx","Dir":"modules/nginx"},{"Key":"second","Source":"./modules/second","Dir":"modules/second"}]}
